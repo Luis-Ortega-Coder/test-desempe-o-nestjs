@@ -16,15 +16,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  // Try to connect to the database to verify connection
-  try {
-    const dataSource = app.get(DataSource);
-    await dataSource.query('SELECT 1');
-    console.log('✅ Database connection established successfully');
-  } catch (err) {
-    console.error('❌ Database connection failed:', err);
-  }
-
   const port = process.env.APP_PORT || 3000;
   await app.listen(port);
   console.log(`🚀 Server running on port ${port}`)

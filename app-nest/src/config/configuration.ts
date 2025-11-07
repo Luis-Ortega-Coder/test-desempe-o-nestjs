@@ -21,8 +21,12 @@ export default () => ({
         host: process.env.DB_CONTAINER_NAME,
         port: parseInt(process.env.POSTGRES_PORT ?? '5432', 10),
         localPort: parseInt(process.env.POSTGRES_LOCAL ?? '5433', 10),
-        user: process.env.POSTGRES_USER,
+        username: process.env.POSTGRES_USER,
         password: process.env.POSTGRES_PASSWORD,
-        db: process.env.POSTGRES_DB,
+        database: process.env.POSTGRES_DB,
     },
+    jwt: {
+        secret: process.env.JWT_SECRET,
+        expiresIn: process.env.JWT_EXPIRES_IN || '24h',
+    }
 });

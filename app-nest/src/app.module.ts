@@ -1,11 +1,11 @@
-import { Inject, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { join } from 'path';
-import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { validationSchema } from './config/validation.schema';
+import { DatabaseModule } from './database/database.module';
 // Determine if running inside Docker container
 const runningInDocker = process.env.RUNNING_IN_DOCKER === 'true';
 
@@ -17,24 +17,11 @@ const externalEnvPath = join(__dirname, '..', '..', '.env');
     ConfigModule.forRoot({
     isGlobal: true,
     load: [configuration],
+    validationSchema: validationSchema,
     ignoreEnvFile: runningInDocker,
     envFilePath: runningInDocker ? undefined : externalEnvPath,
   }),
-
-    //Connection to Postgres database
-    TypeOrmModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.get<string>('database.host'),
-        port: config.get<number>('database.port'),
-        username: config.get<string>('database.user'),
-        password: config.get<string>('database.password'),
-        database: config.get<string>('database.db'),
-        autoLoadEntities: true,
-        synchronize: true, 
-      })
-    })
+    DatabaseModule
     ],
   controllers: [AppController],
   providers: [AppService],
