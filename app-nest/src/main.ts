@@ -2,9 +2,29 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DataSource } from 'typeorm';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import bodyParse from 'body-parser';
+import helmet from 'helmet';
+import compression from 'compression'
+import rateLimit from 'express-rate-limit';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.use(bodyParse.json({ limit: '10kb' }));
+  app.use(helmet());
+  app.enableCors();
+  app.use(compression({ level: 6 }));
+
+  //Rate limiting 
+  app.use(rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100,
+    statusCode: 429,
+    message: 'You have reached the request limit. Please try again later.',
+    ipv6Subnet: 52,
+    legacyHeaders: false,
+    standardHeaders: true,
+  }));
 
   //Swagger set up
   const config = new DocumentBuilder()
