@@ -1,37 +1,43 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { Client } from '../../entity/client.entity';
-import { Technician } from '../../entity/technician.entity';
-import { Category } from '../../entity/category.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import { Client } from '../../client/entity/client.entity';
+import { Technician } from '../../technician/entitities/technician.entity';
+import { Category } from '../../category/entities/category.entities';
+
+export type TicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
+export type TicketPriority = 'low' | 'medium' | 'high';
 
 @Entity('tickets')
 export class Ticket {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
-  @Column()
-  title: string;
+  @Column({ length: 200 })
+  title!: string;
 
   @Column({ type: 'text' })
-  description: string;
+  description!: string;
 
   @Column({ type: 'enum', enum: ['open', 'in_progress', 'resolved', 'closed'], default: 'open' })
-  status: string;
+  status!: TicketStatus;
 
   @Column({ type: 'enum', enum: ['low', 'medium', 'high'], default: 'medium' })
-  priority: string;
+  priority!: TicketPriority;
 
-  @ManyToOne(() => Client, c => c.tickets, { nullable: false })
-  client: Client;
+  @ManyToOne(() => Client, { eager: true, nullable: false })
+  client!: Client;
 
-  @ManyToOne(() => Technician, t => t.tickets, { nullable: true })
-  technician: Technician;
+  @ManyToOne(() => Technician, { eager: true, nullable: true })
+  technician?: Technician;
 
-  @ManyToOne(() => Category, c => c.tickets, { nullable: false })
-  category: Category;
+  @ManyToOne(() => Category, { eager: true, nullable: false })
+  category!: Category;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
+
+  @DeleteDateColumn({ select: false })
+  deletedAt?: Date;
 }

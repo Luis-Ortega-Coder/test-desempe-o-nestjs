@@ -1,44 +1,43 @@
-import {  Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Category } from '../entity/category.entity';
+// src/categories/categories.service.ts
+import { Injectable } from '@nestjs/common';
+import { CategoriesRepository } from './category.repository';
+import { Category } from './entities/category.entities';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+import { ExceptionFactory } from '../common/exceptions/exception.factory';
 
 @Injectable()
-export class CategoryService {
-  constructor(
-    @InjectRepository(Category)
-    private readonly categoryRepository: Repository<Category>,
-  ) {}
+export class CategoriesService {
+  constructor(private readonly catRepo: CategoriesRepository) {}
 
-  async findAll(): Promise<Category[]> {
-    const category = await this.categoryRepository.find();
+  // src/categories/categories.service.ts
+async create(dto: CreateCategoryDto): Promise<Category> {
+  if (await this.catRepo.existsByName(dto.name))
+    throw ExceptionFactory.conflict('Category name already exists');
 
-    if (category.length === 0) {
-        throw new Error('No categories found');
-    }
-    return category;
+  return this.catRepo.save(dto); // save acepta un plain-object
+}
 
-    }
-
-  async findOneById(id: number): Promise<Category> {
-    const category = await this.categoryRepository.findOneBy({ id });
-    if (!category) {
-        throw new Error('Category not found');
-    }
-    return category;
+  findAll(): Promise<Category[]> {
+    return this.catRepo.findAll();
   }
 
-  async create(categoryData: Partial<Category>): Promise<Category> {
-    const category = this.categoryRepository.create(categoryData);
-    return this.categoryRepository.save(category);
+  async findOne(id: string): Promise<Category> {
+    const c = await this.catRepo.findOneById(id);
+    if (!c) throw ExceptionFactory.notFound('Category not found');
+    return c;
   }
 
-  async update(id: number, categoryData: Partial<Category>): Promise<Category> {
-    await this.categoryRepository.update(id, categoryData);
-    return this.findOneById(id);
+  async update(id: string, dto: UpdateCategoryDto): Promise<Category> {
+    const cat = await this.findOne(id);
+    if (dto.name && dto.name !== cat.name && (await this.catRepo.existsByName(dto.name)))
+      throw ExceptionFactory.conflict('Category name already exists');
+    Object.assign(cat, dto);
+    return this.catRepo.save(cat);
   }
 
-  async delete(id: number): Promise<void> {
-    await this.categoryRepository.delete(id);
+  async remove(id: string): Promise<void> {
+    await this.findOne(id);
+    await this.catRepo.softDelete(id);
   }
 }

@@ -1,4 +1,6 @@
-import { IsString, IsEnum, IsUUID } from "class-validator"
+// src/tickets/dto/create-ticket.dto.ts
+import { IsString, IsEnum, IsUUID } from 'class-validator';
+
 export class CreateTicketDto {
   @IsString()
   title: string;
@@ -7,7 +9,7 @@ export class CreateTicketDto {
   description: string;
 
   @IsEnum(['low', 'medium', 'high'])
-  priority: string;
+  priority: TicketPriority = 'medium';
 
   @IsUUID()
   clientId: string;
@@ -15,3 +17,4 @@ export class CreateTicketDto {
   @IsUUID()
   categoryId: string;
 }
+export type TicketPriority = 'low' | 'medium' | 'high';

@@ -13,8 +13,11 @@ export class UsersRepository {
 
   // --- base CRUD ---
   save(user: Partial<User>)           { return this.repo.save(user); }
-  findOneById(id: string)             { return this.repo.findOneBy({ id, deletedAt: null }); }
-  findOneByEmail(email: string)       { return this.repo.findOneBy({ email, deletedAt: null }); }
+  findOneById(id: string)             { return this.repo.findOneBy({ id, deletedAt: undefined }); }
+  findOneByEmail(email: string)       { return this.repo.findOneBy({ email, deletedAt: undefined }); }
+  findAllActive() {
+  return this.repo.find({ where: { deletedAt: undefined } });
+}
   async softDelete(id: string)        { await this.repo.softDelete(id); }
   async existsByEmail(email: string)  { return await this.repo.exist({ where: { email } }); }
 }

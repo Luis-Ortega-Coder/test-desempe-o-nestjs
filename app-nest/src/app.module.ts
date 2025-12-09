@@ -6,6 +6,13 @@ import configuration from './config/configuration';
 import { join } from 'path';
 import { validationSchema } from './config/validation.schema';
 import { DatabaseModule } from './database/database.module';
+import { TicketsModule } from './ticket/ticket.module';
+import { UserModule } from './user/user.module';
+import { CategoryModule } from './category/category.module';
+import { ClientModule } from './client/client.module';
+import { TechniciansModule } from './technician/technician.module';
+import { AuthModule } from './auth/auth.module';
+
 // Determine if running inside Docker container
 const runningInDocker = process.env.RUNNING_IN_DOCKER === 'true';
 
@@ -21,9 +28,15 @@ const externalEnvPath = join(__dirname, '..', '..', '.env');
     ignoreEnvFile: runningInDocker,
     envFilePath: runningInDocker ? undefined : externalEnvPath,
   }),
-    DatabaseModule
+    DatabaseModule,
+    TicketsModule,
+    UserModule,
+    CategoryModule,
+    ClientModule,
+    TechniciansModule,
+    AuthModule
     ],
-  controllers: [AppController],
+  controllers: [AppController,],
   providers: [AppService],
 })
 export class AppModule {}
