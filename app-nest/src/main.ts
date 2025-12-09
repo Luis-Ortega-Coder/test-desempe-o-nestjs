@@ -18,7 +18,7 @@ async function bootstrap() {
   //Rate limiting 
   app.use(rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100,
+    limit: 150,
     statusCode: 429,
     message: 'You have reached the request limit. Please try again later.',
     ipv6Subnet: 52,

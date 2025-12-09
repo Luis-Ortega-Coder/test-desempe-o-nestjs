@@ -1,10 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Ticket } from './ticket.entity';
+import { Ticket } from '../ticket/entity/ticket.entity';
 
 @Entity('technicians')
 export class Technician {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;
@@ -15,6 +15,6 @@ export class Technician {
   @Column({ default: true })
   availability: boolean;
 
-  @OneToMany(() => Ticket, ticket => ticket.technician)
+  @OneToMany(() => Ticket, t => t.technician)
   tickets: Ticket[];
 }

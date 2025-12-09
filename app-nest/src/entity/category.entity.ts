@@ -1,10 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Ticket } from './ticket.entity';
+import { Ticket } from '../ticket/entity/ticket.entity';
 
 @Entity('categories')
 export class Category {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;
@@ -12,6 +12,6 @@ export class Category {
   @Column({ nullable: true })
   description: string;
 
-  @OneToMany(() => Ticket, ticket => ticket.category)
+  @OneToMany(() => Ticket, t => t.category)
   tickets: Ticket[];
 }
